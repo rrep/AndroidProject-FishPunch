@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">FishPunch</string>
+    <string name="main_button_start">START</string>
+    <string name="main_title_info">By Paul Duerr - Android Course Project 07/19</string>
+</resources>
