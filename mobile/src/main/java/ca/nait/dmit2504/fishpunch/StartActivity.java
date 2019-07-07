@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -24,8 +25,9 @@ import java.util.concurrent.ExecutionException;
 
 
 public class StartActivity extends AppCompatActivity {
+    private static final String TAG = "StartActivity";
     int dialogueCounter = 0, punchCounter =0;
-    double fishHP, punchVelocity;
+    int fishCurrentHP, fishDefaultHP = 90, punchVelocity = 0;
     ImageView dialogueImageView, fishImageView;
     Button mNextButton;
 
@@ -77,10 +79,12 @@ public class StartActivity extends AppCompatActivity {
                 mNextButton.setText("PUNCH IT!");
                 break;
             case (4):
-                //dialoguecounter should be taken over by onReceive from the broadcast receiver
-                //TODO send initial message to the wearable to start off the conversation
+                //dialoguecounter should be taken over by onReceive from the broadcast receiver,
+                    // as receiving the message from the wearable will kick off the next event
 
-
+                //send message to the thread
+                //message doesn't matter because we're just starting event on the wearable
+                new NewThread("/FISHPUNCH", "punchit").start();
                 break;
         }
 
@@ -92,19 +96,48 @@ public class StartActivity extends AppCompatActivity {
     public class Receiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent){
-
-            //TODO - RECEIVE MESSAGE
+            //RECEIVE MESSAGE
             // PARSE STRING VALUE TO INT
             // INCREMENT PUNCH COUNTER
+            try{
+            punchVelocity = (int) Math.round(Double.parseDouble(intent.getStringExtra("punchValue")));}
+            catch(Exception ex) {
+                Log.i(TAG, "onReceive: failed to parse punchvalue " + ex);
+            }
             punchCounter++;
             //TODO
             // REMOVE INT FROM FISH HP
+            fishCurrentHP -= punchVelocity;
+            mNextButton.setText("PUNCH IT! AGAIN!");
             // CHANGE DIALOGUE IMAGEVIEW DEPENDING ON FISHHP
+            if (fishCurrentHP < fishDefaultHP*.8){
+                Log.i(TAG, "onReceive: FISHHP8 PV:" + punchVelocity);
+
+            } else{
+                if (fishCurrentHP < fishDefaultHP*.6){
+                    Log.i(TAG, "onReceive: FISHHP6PV:" + punchVelocity);
+
+                }else{
+                    if (fishCurrentHP < fishCurrentHP*.25){
+                        Log.i(TAG, "onReceive: FISHHP3PV:" + punchVelocity);
+                    }else{
+                        if (fishCurrentHP < 0){
+                            Log.i(TAG, "onReceive: FISHHP1PV:" + punchVelocity);
+                            mNextButton.setText("IT'S PUNCHED");
+                        } else {
+                            //fish hp > 80
+                            Log.i(TAG, "onReceive: FISHHP80+PV:" + punchVelocity);
+                        }
+                    }
+                }
+            }
+            //end of nested if/else
+
             // DIALOGUECOUNTER STAYS AT 4 until FISHHP is 0 or punch counter is 3
         }
     }
 
-    //this method will put the Message object into a queue
+    //this method will put the Message object into the queue via the handler class
     public void queueMessage(String messageText) {
         Bundle bundle = new Bundle();
         bundle.putString("messageText", messageText);
@@ -113,14 +146,8 @@ public class StartActivity extends AppCompatActivity {
         myHandler.sendMessage(msg);
     }
 
-    //this method sends the message to the thread
-    public void talkClick(View v){
-        String message = "Sending message...";
-        //passes the path and a message to the NewThread constructor
-        new NewThread("/FISHPUNCH", message).start();
-    }
 
-    //thread class to actually run it
+    //thread class to run the send Message
     class NewThread extends Thread {
         String path;
         String message;
