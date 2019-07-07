@@ -26,6 +26,5 @@
         android:id="@+id/testbutton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="testButtonClick"
         android:text="test button" />
 </LinearLayout>

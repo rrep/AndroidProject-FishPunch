@@ -1,6 +1,9 @@
 package ca.nait.dmit2504.fishpunch;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -15,8 +18,17 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.Wearable;
+
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class WearablePunchActivity extends WearableActivity implements SensorEventListener {
     TextView mFeedbackTextView;
@@ -50,14 +62,60 @@ public class WearablePunchActivity extends WearableActivity implements SensorEve
         mSensorManager.registerListener(WearablePunchActivity.this, accelerometer, SensorManager.SENSOR_DELAY_GAME);
         Log.d(TAG, "onCreate: Registered Accelerometer listener");
 
+        //broadcastreceiver stuff
+        IntentFilter newFilter = new IntentFilter(Intent.ACTION_SEND);
+        Receiver messageReceiver = new Receiver();
+        LocalBroadcastManager.getInstance(this).registerReceiver(messageReceiver, newFilter);
 
         // Enables Always-on
         setAmbientEnabled();
     }
 
+    public class Receiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            testButtonClick();
+        }
+    }
+
+    class SendMessage extends Thread {
+        String path;
+        String message;
+
+        SendMessage(String p, String m){
+            path = p;
+            message = m;
+        }
+        public void run() {
+
+            Task<List<Node>> wearableList = Wearable.getNodeClient(getApplicationContext()).getConnectedNodes();
+            try {
+                List<Node> nodes = Tasks.await(wearableList);
+                for (Node node : nodes) {
+                    Task<Integer> sendMessageTask =
+                            //send message
+                            Wearable.getMessageClient(WearablePunchActivity.this).sendMessage(node.getId(), path, message.getBytes());
+                    try {
+                        Integer result = Tasks.await(sendMessageTask);
+                    } catch (ExecutionException exception) {
+                        //handle exception
+                    } catch (InterruptedException ex) {
+                        //handle exception
+                    }
+                }
+            }catch (ExecutionException ex){
+                //handle exception
+            } catch (InterruptedException ex){
+                //handle exception
+            }
+        }
+
+    }
 
 
-    public void testButtonClick(View v){
+
+
+    public void testButtonClick(){
         new CountDownTimer(5000, 1000) {
 
             public void onTick(long millisUntilFinished) {
@@ -83,6 +141,7 @@ public class WearablePunchActivity extends WearableActivity implements SensorEve
                         mPunchTextView.setTextColor(Color.LTGRAY);
                         xValues.clear();
                         yValues.clear();
+                        new SendMessage("/FISHPUNCH", punchValue+"").start();
                     }
                 }.start();
             }

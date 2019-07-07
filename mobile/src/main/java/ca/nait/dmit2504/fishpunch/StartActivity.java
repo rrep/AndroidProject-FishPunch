@@ -36,6 +36,7 @@ public class StartActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        fishCurrentHP = fishDefaultHP;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
         dialogueImageView = findViewById(R.id.dialogueImageView);
@@ -49,7 +50,6 @@ public class StartActivity extends AppCompatActivity {
             @Override
             public boolean handleMessage(Message msg) {
                 Bundle stuff = msg.getData();
-                //do whatever on another thread;
                 return true;
             }
         });
@@ -78,13 +78,14 @@ public class StartActivity extends AppCompatActivity {
                 dialogueCounter++;
                 mNextButton.setText("PUNCH IT!");
                 break;
-            case (4):
+            case (3):
                 //dialoguecounter should be taken over by onReceive from the broadcast receiver,
                     // as receiving the message from the wearable will kick off the next event
 
                 //send message to the thread
                 //message doesn't matter because we're just starting event on the wearable
                 new NewThread("/FISHPUNCH", "punchit").start();
+                Log.i(TAG, "dialogueClick: Clicked");
                 break;
         }
 
@@ -99,11 +100,12 @@ public class StartActivity extends AppCompatActivity {
             //RECEIVE MESSAGE
             // PARSE STRING VALUE TO INT
             // INCREMENT PUNCH COUNTER
-            try{
-            punchVelocity = (int) Math.round(Double.parseDouble(intent.getStringExtra("punchValue")));}
+            final String value = intent.getStringExtra("punchValue");
+/*            try{
+
             catch(Exception ex) {
                 Log.i(TAG, "onReceive: failed to parse punchvalue " + ex);
-            }
+            }*/
             punchCounter++;
             //TODO
             // REMOVE INT FROM FISH HP
@@ -111,7 +113,7 @@ public class StartActivity extends AppCompatActivity {
             mNextButton.setText("PUNCH IT! AGAIN!");
             // CHANGE DIALOGUE IMAGEVIEW DEPENDING ON FISHHP
             if (fishCurrentHP < fishDefaultHP*.8){
-                Log.i(TAG, "onReceive: FISHHP8 PV:" + punchVelocity);
+                Log.i(TAG, "onReceive: FISHHP8 PV:" + value);
 
             } else{
                 if (fishCurrentHP < fishDefaultHP*.6){
@@ -126,7 +128,7 @@ public class StartActivity extends AppCompatActivity {
                             mNextButton.setText("IT'S PUNCHED");
                         } else {
                             //fish hp > 80
-                            Log.i(TAG, "onReceive: FISHHP80+PV:" + punchVelocity);
+                            Log.i(TAG, "onReceive: FISHHP80+PV:" + value);
                         }
                     }
                 }
@@ -152,6 +154,7 @@ public class StartActivity extends AppCompatActivity {
         String path;
         String message;
         NewThread(String p, String m){
+            Log.i(TAG, "NewThread: new thread created");
             path = p;
             message = m;
         }
@@ -159,6 +162,7 @@ public class StartActivity extends AppCompatActivity {
             //gets a list of connected devices
             Task<List<Node>> wearableList = Wearable.getNodeClient(getApplicationContext()).getConnectedNodes();
             try {
+                Log.i(TAG, "run: nodes investigated");
                 List<Node> nodes = Tasks.await(wearableList);
                 //iterates through all devices
                 for (Node node : nodes) {
