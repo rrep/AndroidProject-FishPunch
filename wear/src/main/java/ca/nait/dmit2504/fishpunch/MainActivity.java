@@ -22,6 +22,7 @@ public class MainActivity extends WearableActivity {
         // Enables Always-on
         setAmbientEnabled();
     }
+
     public void startClick(View v){
         Intent intent = new Intent(this, WearablePunchActivity.class);
         startActivity(intent);
