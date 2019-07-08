@@ -1,5 +1,6 @@
 package ca.nait.dmit2504.fishpunch;
 
+import android.animation.ObjectAnimator;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -108,22 +109,28 @@ public class StartActivity extends AppCompatActivity {
             }*/
             punchCounter++;
             fishCurrentHP = fishCurrentHP - punchVelocity;
-            mNextButton.setText("PUNCH IT! AGAIN!");
-            // CHANGE DIALOGUE IMAGEVIEW DEPENDING ON FISHHP
-            if (fishCurrentHP > fishDefaultHP*.8){
-                Log.i(TAG, "onReceive: FISHHP: "+fishCurrentHP+ "PV:" + punchVelocity);
+            ObjectAnimator rotate = ObjectAnimator.ofFloat(fishImageView, "rotation", 0f, 20f, 0f, -20f, 0f); // rotate o degree then 20 degree and so on for one loop of rotation.
+            rotate.setRepeatCount(5); 
+            rotate.setDuration(100);
+            rotate.start();
+            if (punchCounter <= 3) {
+                mNextButton.setText("PUNCH IT! AGAIN!");
+                // CHANGE DIALOGUE IMAGEVIEW DEPENDING ON FISHHP
+                if (fishCurrentHP > fishDefaultHP * .8) {
+                    Log.i(TAG, "onReceive: FISHHP: " + fishCurrentHP + "PV:" + punchVelocity);
 
-            } else{
-                if (fishCurrentHP > fishDefaultHP*.6 && fishCurrentHP < fishDefaultHP*.8){
-                    Log.i(TAG, "onReceive: FISHHP: "+fishCurrentHP+ "PV:" + punchVelocity);
+                } else {
+                    if (fishCurrentHP > fishDefaultHP * .6 && fishCurrentHP < fishDefaultHP * .8) {
+                        Log.i(TAG, "onReceive: FISHHP: " + fishCurrentHP + "PV:" + punchVelocity);
 
-                }else{
-                    if (fishCurrentHP > fishCurrentHP*.25 && fishCurrentHP < fishDefaultHP*.6){
-                        Log.i(TAG, "onReceive: FISHHP: "+fishCurrentHP+ "PV:" + punchVelocity);
-                    }else{
-                        if (fishCurrentHP < 0){
-                            Log.i(TAG, "onReceive: FISHHP: "+fishCurrentHP+ "PV:" + punchVelocity);
-                            mNextButton.setText("IT'S PUNCHED");
+                    } else {
+                        if (fishCurrentHP > fishCurrentHP * .25 && fishCurrentHP < fishDefaultHP * .6) {
+                            Log.i(TAG, "onReceive: FISHHP: " + fishCurrentHP + "PV:" + punchVelocity);
+                        } else {
+                            if (fishCurrentHP < 0) {
+                                Log.i(TAG, "onReceive: FISHHP: " + fishCurrentHP + "PV:" + punchVelocity);
+                                mNextButton.setText("IT'S PUNCHED");
+                            }
                         }
                     }
                 }
