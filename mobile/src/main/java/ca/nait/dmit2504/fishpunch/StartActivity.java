@@ -87,25 +87,25 @@ public class StartActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent){
             //RECEIVE MESSAGE
-            // PARSE STRING VALUE TO INT
-            // INCREMENT PUNCH COUNTER
+            //get punch value from the intent
             long punchVelocity = intent.getLongExtra("punchValue", 0);
-/*            try{
-
-            catch(Exception ex) {
-                Log.i(TAG, "onReceive: failed to parse punchvalue " + ex);
-            }*/
             punchCounter++;
+            //remove punchvalue from fish hp
             fishCurrentHP = fishCurrentHP - punchVelocity;
+
+            //shake the fish if the punch value is over 20
             if (punchVelocity > 20) {
                 ObjectAnimator rotate = ObjectAnimator.ofFloat(fishImageView, "rotation", 0f, 20f, 0f, -20f, 0f); // rotate o degree then 20 degree and so on for one loop of rotation.
                 rotate.setRepeatCount(5);
                 rotate.setDuration(100);
                 rotate.start();
             }
+
+            //check how many punches
             if (punchCounter <= 3) {
                 mNextButton.setText("PUNCH IT! AGAIN!");
-                // CHANGE DIALOGUE IMAGEVIEW DEPENDING ON FISHHP
+                //TODO - CHANGE DIALOGUE IMAGEVIEW DEPENDING ON FISHHP
+                //check HP
                 if (fishCurrentHP > fishDefaultHP * .8) {
                     Log.i(TAG, "onReceive: FISHHP: " + fishCurrentHP + "PV:" + punchVelocity);
 
@@ -126,8 +126,6 @@ public class StartActivity extends AppCompatActivity {
                 }
             }
             //end of nested if/else
-
-            // DIALOGUECOUNTER STAYS AT 4 until FISHHP is 0 or punch counter is 3
         }
     }
 
