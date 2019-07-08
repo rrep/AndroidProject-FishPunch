@@ -100,6 +100,15 @@ public class StartActivity extends AppCompatActivity {
                 rotate.setDuration(100);
                 rotate.start();
             }
+            
+            switch(punchCounter){
+                case 1:
+                    dialogueImageView.setImageResource(R.drawable.punchagain);
+                    break;
+                case 2:
+                    dialogueImageView.setImageResource(R.drawable.itscoming);
+                    break;
+            }
 
             //check how many punches
             if (punchCounter <= 3) {
@@ -119,7 +128,8 @@ public class StartActivity extends AppCompatActivity {
                         } else {
                             if (fishCurrentHP < 0) {
                                 Log.i(TAG, "onReceive: FISHHP: " + fishCurrentHP + "PV:" + punchVelocity);
-                                mNextButton.setText("IT'S PUNCHED");
+                                dialogueImageView.setImageResource(R.drawable.victory);
+                                mNextButton.setText("YOU WIN");
                             }
                         }
                     }
