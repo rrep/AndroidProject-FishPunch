@@ -70,7 +70,7 @@ public class StartActivity extends AppCompatActivity {
             case (3):
                 //dialoguecounter should be taken over elsewhere in program,
                 // as receiving the message from the wearable will kick off the next event
-                
+
                 //send message to the thread
                 //  message doesn't matter because we're just starting event on the wearable
                 new NewThread("/FISHPUNCH", "punchit").start();
@@ -133,6 +133,7 @@ public class StartActivity extends AppCompatActivity {
                             if (fishCurrentHP < 0) {
                                 Log.i(TAG, "onReceive: FISHHP: " + fishCurrentHP + "PV:" + punchVelocity);
                                 dialogueImageView.setImageResource(R.drawable.victory);
+                                fishImageView.setImageResource(android.R.color.transparent);
                                 dialogueCounter = 9;
                                 mNextButton.setText("YOU WIN");
                             }
