@@ -68,13 +68,17 @@ public class StartActivity extends AppCompatActivity {
                 mNextButton.setText("PUNCH IT!");
                 break;
             case (3):
-                //dialoguecounter should be taken over by onReceive from the broadcast receiver,
-                    // as receiving the message from the wearable will kick off the next event
-
+                //dialoguecounter should be taken over elsewhere in program,
+                // as receiving the message from the wearable will kick off the next event
+                
                 //send message to the thread
-                //message doesn't matter because we're just starting event on the wearable
+                //  message doesn't matter because we're just starting event on the wearable
                 new NewThread("/FISHPUNCH", "punchit").start();
                 Log.i(TAG, "dialogueClick: Clicked");
+                break;
+            case (9):
+                Intent startActivityintent = new Intent(this, MainActivity.class);
+                startActivity(startActivityintent);
                 break;
         }
 
@@ -100,7 +104,7 @@ public class StartActivity extends AppCompatActivity {
                 rotate.setDuration(100);
                 rotate.start();
             }
-            
+
             switch(punchCounter){
                 case 1:
                     dialogueImageView.setImageResource(R.drawable.punchagain);
@@ -129,11 +133,18 @@ public class StartActivity extends AppCompatActivity {
                             if (fishCurrentHP < 0) {
                                 Log.i(TAG, "onReceive: FISHHP: " + fishCurrentHP + "PV:" + punchVelocity);
                                 dialogueImageView.setImageResource(R.drawable.victory);
+                                dialogueCounter = 9;
                                 mNextButton.setText("YOU WIN");
                             }
                         }
                     }
                 }
+            }
+            if (punchCounter >= 3 && fishCurrentHP > 0)
+            {
+                dialogueImageView.setImageResource(R.drawable.gameover);
+                dialogueCounter = 9;
+                mNextButton.setText("YOU LOSE");
             }
             //end of nested if/else
         }
