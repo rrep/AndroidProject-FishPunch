@@ -107,8 +107,6 @@ public class StartActivity extends AppCompatActivity {
                 Log.i(TAG, "onReceive: failed to parse punchvalue " + ex);
             }*/
             punchCounter++;
-            //TODO
-            // REMOVE INT FROM FISH HP
             fishCurrentHP -= punchVelocity;
             mNextButton.setText("PUNCH IT! AGAIN!");
             // CHANGE DIALOGUE IMAGEVIEW DEPENDING ON FISHHP
