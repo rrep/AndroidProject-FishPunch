@@ -18,7 +18,6 @@ public class MessageService extends WearableListenerService {
             Intent messageIntent = new Intent();
             messageIntent.setAction(Intent.ACTION_SEND);
             messageIntent.putExtra("punchValue", message);
-
             LocalBroadcastManager.getInstance(this).sendBroadcast(messageIntent);
         }
         else {

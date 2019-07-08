@@ -27,7 +27,7 @@ import java.util.concurrent.ExecutionException;
 public class StartActivity extends AppCompatActivity {
     private static final String TAG = "StartActivity";
     int dialogueCounter = 0, punchCounter =0;
-    int fishCurrentHP, fishDefaultHP = 90, punchVelocity = 0;
+    long fishCurrentHP, fishDefaultHP = 90;
     ImageView dialogueImageView, fishImageView;
     Button mNextButton;
 
@@ -100,33 +100,30 @@ public class StartActivity extends AppCompatActivity {
             //RECEIVE MESSAGE
             // PARSE STRING VALUE TO INT
             // INCREMENT PUNCH COUNTER
-            final String value = intent.getStringExtra("punchValue");
+            long punchVelocity = intent.getLongExtra("punchValue", 0);
 /*            try{
 
             catch(Exception ex) {
                 Log.i(TAG, "onReceive: failed to parse punchvalue " + ex);
             }*/
             punchCounter++;
-            fishCurrentHP -= punchVelocity;
+            fishCurrentHP = fishCurrentHP - punchVelocity;
             mNextButton.setText("PUNCH IT! AGAIN!");
             // CHANGE DIALOGUE IMAGEVIEW DEPENDING ON FISHHP
-            if (fishCurrentHP < fishDefaultHP*.8){
-                Log.i(TAG, "onReceive: FISHHP8 PV:" + value);
+            if (fishCurrentHP > fishDefaultHP*.8){
+                Log.i(TAG, "onReceive: FISHHP: "+fishCurrentHP+ "PV:" + punchVelocity);
 
             } else{
-                if (fishCurrentHP < fishDefaultHP*.6){
-                    Log.i(TAG, "onReceive: FISHHP6PV:" + punchVelocity);
+                if (fishCurrentHP > fishDefaultHP*.6 && fishCurrentHP < fishDefaultHP*.8){
+                    Log.i(TAG, "onReceive: FISHHP: "+fishCurrentHP+ "PV:" + punchVelocity);
 
                 }else{
-                    if (fishCurrentHP < fishCurrentHP*.25){
-                        Log.i(TAG, "onReceive: FISHHP3PV:" + punchVelocity);
+                    if (fishCurrentHP > fishCurrentHP*.25 && fishCurrentHP < fishDefaultHP*.6){
+                        Log.i(TAG, "onReceive: FISHHP: "+fishCurrentHP+ "PV:" + punchVelocity);
                     }else{
                         if (fishCurrentHP < 0){
-                            Log.i(TAG, "onReceive: FISHHP1PV:" + punchVelocity);
+                            Log.i(TAG, "onReceive: FISHHP: "+fishCurrentHP+ "PV:" + punchVelocity);
                             mNextButton.setText("IT'S PUNCHED");
-                        } else {
-                            //fish hp > 80
-                            Log.i(TAG, "onReceive: FISHHP80+PV:" + value);
                         }
                     }
                 }

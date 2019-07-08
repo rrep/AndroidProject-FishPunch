@@ -19,8 +19,9 @@ public class MessageService extends WearableListenerService {
         if (messageEvent.getPath().equals("/FISHPUNCH")) {
             final String message = new String(messageEvent.getData());
             Intent messageIntent = new Intent();
+            long punch = Math.round(Double.parseDouble(message));
             messageIntent.setAction(Intent.ACTION_SEND);
-            messageIntent.putExtra("message", message);
+            messageIntent.putExtra("punchValue", punch);
 
             LocalBroadcastManager.getInstance(this).sendBroadcast(messageIntent);
         }
