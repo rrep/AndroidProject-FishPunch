@@ -32,9 +32,6 @@ public class StartActivity extends AppCompatActivity {
     ImageView dialogueImageView, fishImageView;
     Button mNextButton;
 
-    //handler for message queue
-    protected Handler myHandler;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         fishCurrentHP = fishDefaultHP;
@@ -45,15 +42,6 @@ public class StartActivity extends AppCompatActivity {
         dialogueImageView.setImageResource(android.R.color.transparent);
         fishImageView.setImageResource(android.R.color.transparent);
         mNextButton = findViewById(R.id.next_button);
-
-        //use the handler to get data
-        myHandler = new Handler(new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message msg) {
-                Bundle stuff = msg.getData();
-                return true;
-            }
-        });
 
         //registering the broadcast receiver to our activity
         IntentFilter messageFilter = new IntentFilter(Intent.ACTION_SEND);
@@ -109,10 +97,12 @@ public class StartActivity extends AppCompatActivity {
             }*/
             punchCounter++;
             fishCurrentHP = fishCurrentHP - punchVelocity;
-            ObjectAnimator rotate = ObjectAnimator.ofFloat(fishImageView, "rotation", 0f, 20f, 0f, -20f, 0f); // rotate o degree then 20 degree and so on for one loop of rotation.
-            rotate.setRepeatCount(5); 
-            rotate.setDuration(100);
-            rotate.start();
+            if (punchVelocity > 20) {
+                ObjectAnimator rotate = ObjectAnimator.ofFloat(fishImageView, "rotation", 0f, 20f, 0f, -20f, 0f); // rotate o degree then 20 degree and so on for one loop of rotation.
+                rotate.setRepeatCount(5);
+                rotate.setDuration(100);
+                rotate.start();
+            }
             if (punchCounter <= 3) {
                 mNextButton.setText("PUNCH IT! AGAIN!");
                 // CHANGE DIALOGUE IMAGEVIEW DEPENDING ON FISHHP
@@ -141,16 +131,6 @@ public class StartActivity extends AppCompatActivity {
         }
     }
 
-    //this method will put the Message object into the queue via the handler class
-    public void queueMessage(String messageText) {
-        Bundle bundle = new Bundle();
-        bundle.putString("messageText", messageText);
-        Message msg = myHandler.obtainMessage();
-        msg.setData(bundle);
-        myHandler.sendMessage(msg);
-    }
-
-
     //thread class to run the send Message
     class NewThread extends Thread {
         String path;
@@ -174,7 +154,6 @@ public class StartActivity extends AppCompatActivity {
                             Wearable.getMessageClient(StartActivity.this).sendMessage(node.getId(), path, message.getBytes());
                     try {
                         Integer result = Tasks.await(sendMessageTask);
-                        queueMessage("I just sent the wearable a message");
                     } catch (ExecutionException exception) {
                         //handle exception
                     } catch (InterruptedException ex) {
