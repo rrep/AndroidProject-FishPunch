@@ -1,7 +1,7 @@
 # FishPunch
 DMIT2504 Android Dev Course Project
 
-A Simple Game that uses the WearOS MessageClient API to receive accelerometer readings as input.
+A game that uses the WearOS MessageClient API to receive accelerometer readings as input.
 
 This project borrows heavily from the article by Jessica Thornsby
 Get Wear OS and Android Talking: Exchanging Information via the Wearable Data Layer
